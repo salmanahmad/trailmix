@@ -1,0 +1,12 @@
+{
+  "name": "trailmix",
+  "description": "A Git inspired storage system for mobile applications.",
+  "version": "0.0.1",
+  "author": "Salman Ahmad <salman@salmanahmad.com>",
+  "repository": "git://github.com/salmanahmad/trailmix",
+  "main": "lib/trailmix",
+  "dependencies": {
+    "sqlite3": "*",
+    "underscore": "*"
+  }
+}
