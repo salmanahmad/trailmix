@@ -23,6 +23,17 @@
   
   <script type="text/javascript" charset="utf-8">
 
+  function tick() {
+    window.database.pull("origin", function() {
+      loadTodos();
+      window.database.push("origin", function() {
+        setTimeout(tick, 1000);
+      })
+    })
+  }
+  
+  setTimeout(tick, 200);
+
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
   };
@@ -40,12 +51,12 @@
   var adapter = new WebSQLAdapter({}, function() {
     var db = window.database = new TrailMix.Database(adapter);
     db.addRemote("origin", "http://localhost:3000");
-    db.pull("origin");
-    
-    $(function() {
-      todoTemplate = Handlebars.compile($("#todos-template").html());
-      loadTodos();
-    })
+    db.pull("origin", function() {
+      $(function() {
+        todoTemplate = Handlebars.compile($("#todos-template").html());
+        loadTodos();
+      })
+    });
   })
   
   
@@ -115,6 +126,7 @@
         var changes = {}
         changes[id] = value;
         window.database.save("", {}, changes, function() {
+          window.database.push("origin")
           loadTodos();
         })
       })
@@ -128,8 +140,6 @@
         values = _.sortBy(values, function(todo) {
           return todo.createdAt
         })
-        
-        console.log(values);
         
         var html = todoTemplate({todos: values});
         $("#todos").html(html);

@@ -50,7 +50,8 @@ function Database(adapter) {
   this.remotes = {};
   
   this.conflict(function(conflicts, branches, merge, callback) {
-    callback(masterBranch);
+    console.log(conflicts)
+    callback();
   });
 }
 
@@ -98,7 +99,8 @@ Database.prototype.mergeBranches = function(branch1, branch2, callback) {
   var branch1 = branches[0];
   var branch2 = branches[1];
   
-  this.adapter.commonBase(branch1, branch2, function(base, list1, list2) {
+  var that = this;
+  this.adapter.commonBase(branch1.id, branch2.id, function(base, list1, list2) {
     var db1 = {};
     var db2 = {};
     
@@ -107,12 +109,12 @@ Database.prototype.mergeBranches = function(branch1, branch2, callback) {
     
     list1.forEach(function(value) {
       commitMap1[value.id] = true;
-      db1.extend(db1, value.changes);
+      db1 = underscore.extend(db1, value.changes);
     })
     
     list2.forEach(function(value) {
       commitMap2[value.id] = true
-      db2.extend(db2, value.changes);
+      db2 = underscore.extend(db2, value.changes);
     })
     
     var conflictingKeys = underscore.union(underscore.keys(db1), underscore.keys(db2));
@@ -125,9 +127,9 @@ Database.prototype.mergeBranches = function(branch1, branch2, callback) {
     commit.sign()
 
     var continuation = function() {
-      commit.parentIds = [branch1, branch2];
+      commit.parentIds = [branch1.id, branch2.id];
       
-      this.database.adapter.saveCommit(commit, function() {
+      that.adapter.saveCommit(commit, function() {
         callback();
       });
     }
@@ -144,7 +146,7 @@ Database.prototype.mergeBranches = function(branch1, branch2, callback) {
             list1.forEach(function(commit) {
               var overlap = underscore.union(underscore.keys(commit.changes), matches)
               if(overlap.length != 0) {
-                relatedCommits.add(commit);
+                relatedCommits.push(commit);
               }
             });
             
@@ -156,7 +158,7 @@ Database.prototype.mergeBranches = function(branch1, branch2, callback) {
         }
       })
       
-      this.resolveConflict(conflicts, [branch1, branch2], commit, continuation);
+      that.resolveConflict(conflicts, [branch1, branch2], commit, continuation);
     } else {
       continuation();
     }
@@ -2205,6 +2207,14 @@ Branch.prototype.load = function(keys, callback) {
 
 Branch.prototype.snapshot = function(callback) {
   var that = this;
+  
+  if(!(this.head)) {
+    setTimeout(function() {
+      callback({})
+    }, 0)
+    return
+  }
+  
   this.database.adapter.commits(function(results) {
     var commits = {}
     for(var i in results) {
