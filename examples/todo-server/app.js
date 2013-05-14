@@ -53,7 +53,12 @@ app.get("/commits", function(req, res) {
 })
 
 app.post("/commits", function(req, res) {
-  res.end("Hello!")
+  var commits = req.body.commits;
+  commits = JSON.parse(commits);
+  
+  database.adapter.mergeCommits(commits, function() {
+    res.end();
+  })
 })
 
 server.listen(app.get('port'), function(){

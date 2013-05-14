@@ -60,7 +60,7 @@ Database.prototype.conflict = function(callback) {
 
 Database.prototype.delete = function(callback) {
   this.adapter.delete(function() {
-    callback()
+    if(underscore.isFunction(callback)) callback()
   })
 }
 
@@ -165,28 +165,23 @@ Database.prototype.mergeBranches = function(branch1, branch2, callback) {
 }
 
 
-Database.prototype.push = function(remote) {
-  // TODO
+Database.prototype.push = function(remote, callback) {
+  var that = this;
+  that.adapter.commits(function(commits) {
+    var data = JSON.stringify(commits)
+    $.post(that.remotes[remote] + "/commits", {commits: data}, function() {
+      if(underscore.isFunction(callback)) callback();
+    })
+  })
 }
 
 Database.prototype.pull = function(remote, callback) {
   var that = this;
   $.get(this.remotes[remote] + "/commits", function(data) {
     var commits = JSON.parse(data);
-    
-    function recur() {
-      if(commits.length == 0) {
-        callback();
-        return;
-      }
-      
-      that.adapter.saveCommit(commits[0], function() {
-        commits = underscore.rest(commits);
-        recur();
-      })
-    }
-    
-    recur();
+    that.adapter.mergeCommits(commits, function() {
+      if(underscore.isFunction(callback)) callback();
+    })
   })
 }
 

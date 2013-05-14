@@ -25,15 +25,17 @@
   var WebSQLAdapter = require("./lib/adapters/websql-adapter");
   
   window.database = null;
+  
   var adapter = new WebSQLAdapter({}, function() {
     var db = window.database = new TrailMix.Database(adapter);
-    db.delete(function() {
-      db.addRemote("origin", "http://localhost:3000");
-    })
+    db.addRemote("origin", "http://localhost:3000");
+    db.pull("origin");
   })
   
+  
+  
   $(function() {
-    $("#button").click(function() {
+    $("#pull").click(function() {
       var db = window.database;
       db.pull("origin", function() {
         db.currentBranch(function(branch) {
@@ -43,6 +45,17 @@
         })
       });
     })
+    
+    
+    $("#push").click(function() {
+      var db = window.database;
+      db.push("origin");
+    })
+    
+    $("#delete").click(function() {
+      window.database.delete();
+    })
+    
   })
   
   
@@ -57,7 +70,9 @@
     </div>
     
     <div id="content">
-      <button class="btn" id="button">Pull!</button>
+      <button class="btn" id="pull">Pull</button>
+      <button class="btn" id="push">Push</button>
+      <button class="btn" id="delete">Delete</button>
     </div>
     
     <div id="footer">
