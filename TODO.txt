@@ -1,19 +1,24 @@
 
-Merge
 
 Dealing with Remotes
+  Reading a key-value pair from a remote?
+  Setting cache settings for a keyed-pull
 
-Reading a key-value pair from a remote?
-
-Setting cache settings for a keyed-pull
-
-Clear API
+Delete API
 
 WebSQL / Clients
 
-Auth
+Authentication
 
 Demo
 
 Presentation
+
+
+A distributed key-value storage system
+Data stays on the user's device
+Offline access and asynchronous replication
+Eventually consistent
+API for conflict resolution
+
 

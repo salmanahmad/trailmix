@@ -1,0 +1,14 @@
+{
+  "name": "CardStackSpeed",
+  "version": "0.0.1",
+  "author": "Salman Ahmad <salman@salmanahmad.com>",
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "express": "*",
+    "hogan.js": "*",
+    "hogan-express": "*",
+    "socket.io": "*",
+    "winston": "*"
+  }
+}

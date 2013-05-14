@@ -1,0 +1,143 @@
+
+* {
+  font-family: Helvetica, Arial, Sans-Serif;
+}
+
+body {
+  background-color:#ececec;
+  background-image:url("../images/background.png");
+}
+
+body {
+  margin:0px;
+}
+
+p {
+  font-size:12px;
+}
+
+#block {
+  background-color:#f5f5f5;
+  padding:15px;
+  border-radius:5px;
+}
+
+#page {
+  width:800px;
+  margin:auto;
+  
+  border:none;
+  box-shadow:0px 0px 15px #333;
+
+  background-color:white;
+}
+
+#header {
+  padding:20px;
+  border-bottom:1px solid #ccc;
+  
+  /*
+  background-color: #ffffff;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#dedede));
+  background-image: -webkit-linear-gradient(top, #ffffff, #dedede);
+  background-image:    -moz-linear-gradient(top, #ffffff, #dedede);
+  background-image:      -o-linear-gradient(top, #ffffff, #dedede);
+  background-image:         linear-gradient(to bottom, #ffffff, #dedede);
+  */
+  
+  background-color:#f5f5f5;
+}
+
+#footer {
+  padding:15px;
+  font-size:12px;
+  color:#000;
+  border-top:1px solid #ccc;
+  background-color:#f5f5f5;
+  
+}
+
+#content {
+  padding:15px;
+}
+
+#header h1 {
+  padding:0px;
+  margin:0px;
+  font-weight:normal;
+  font-family: 'Courgette', cursive;
+  font-family: 'Cantora One', sans-serif;
+  font-family: 'Carrois Gothic', sans-serif;
+  font-family: 'Raleway Dots', cursive;
+  font-family: 'Racing Sans One', cursive;
+  font-size:30px;
+
+}
+
+#navigation {
+  border-bottom:1px solid #ccc;
+}
+
+#navigation ul {
+  padding:0px;
+  margin:0px;
+  font-size:12px;
+  padding:10px 0px; 
+}
+
+#navigation form {
+  display:inline;
+  padding:0px;
+  margin:0px;
+}
+
+#navigation input[type=submit] {
+  background-color:transparent;
+  border:none;
+  font-size:12px;
+  cursor:pointer;
+  font-weight:bold;
+  text-decoration:underline;
+  padding:0px;
+  margin:0px;
+}
+
+#navigation ul li {
+  display:inline;
+  padding:10px;
+  margin:0px;
+  border-right:1px solid #ccc;
+}
+
+
+.message {
+  padding:10px;
+  background-color:rgb(255,255,200);
+  border-radius:10px;
+}
+
+.todo {
+  padding:5px 15px;
+  border:1px solid #ccc;
+  border-radius:5px;
+  margin-bottom:10px;
+}
+
+.todo h3 {
+  margin:0px;
+  padding:0px;
+}
+
+.submit-h4 {
+  border:none;
+  background-color:transparent;
+  padding:0px;
+  text-align:left;
+  font-weight:bold;
+  font-size:inherit;
+}
+
+.link-form {
+  padding:0px;
+  margin:0px;
+}
