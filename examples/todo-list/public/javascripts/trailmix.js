@@ -32,6 +32,12 @@ Database.prototype.conflict = function(callback) {
   this.resolveConflict = callback;
 }
 
+Database.prototype.delete = function(callback) {
+  this.adapter.delete(function() {
+    callback()
+  })
+}
+
 Database.prototype.currentBranch = function(callback) {
   var that = this;
   this.adapter.branches(function(branches) {

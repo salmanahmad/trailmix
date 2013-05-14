@@ -24,10 +24,9 @@
   var TrailMix = require("./lib/trailmix");
   var WebSQLAdapter = require("./lib/adapters/websql-adapter");
   
-
+  var database = null;
   var adapter = new WebSQLAdapter({}, function() {
-    var database = new TrailMix.Database(adapter);
-    
+    database = new TrailMix.Database(adapter);
     database.save("initial", {}, {"hello": "World!"}, function() {
       console.log("saved!")
       database.load(["hello"], function(values) {
