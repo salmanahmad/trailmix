@@ -30,20 +30,43 @@
     });  
   });
   
-  socket.on('connection', function (data) {
-    window.database.pull("origin", function() {
-      loadTodos();
-      window.database.push("origin")
+  socket.on('connect', function (data) {
+    connectAlert();
+    window.database.push("origin", function() {
+      window.database.pull("origin", function() {
+        loadTodos();
+      })
     });  
   });
-
+  
+  socket.on('disconnect', function () {
+    disconnectAlert();
+  })
+  
   socket.on('reconnect', function () {
-    alert("reconnect!")
-    window.database.pull("origin", function() {
-      loadTodos();
-      window.database.push("origin")
+    connectAlert();
+    window.database.push("origin", function() {
+      window.database.pull("origin", function() {
+        loadTodos();
+      })
     });  
   })
+
+  function connectAlert() {
+    $("#connected").fadeIn(function() {
+      setTimeout(function() {
+        $("#connected").fadeOut();
+      }, 3000)
+    })
+  }
+  
+  function disconnectAlert() {
+    $("#disconnected").fadeIn(function() {
+      setTimeout(function() {
+        $("#disconnected").fadeOut();
+      }, 3000)
+    })
+  }
 
 
   function tick() {
@@ -206,11 +229,22 @@
       <h1>Todo List</h1>
     </div>
     
+    
     <div id="navigation">
       <form class="form-inline" id="form">
         <input type="text" id="todo-name" class="input" style="width:500px" placeholder="New Todo Item">
         <button type="submit" class="btn">Create</button>
       </form>
+    </div>
+    
+    <div id="disconnected" style="display:none;border-radius:0px;" class="alert alert-error">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong>Lost Connection!</strong> We lost connection to the centralized replica.
+    </div>
+    
+    <div id="connected" style="display:none;border-radius:0px;" class="alert alert-success">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <strong>Connected!</strong> We have a stable connection to the centralized replica.
     </div>
     
     <div id="content">
