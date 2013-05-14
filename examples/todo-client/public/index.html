@@ -5,6 +5,8 @@
   <title>Todo List</title>
 
   <script src="/javascripts/jquery-2.0.0.min.js"></script>
+  <script src="/javascripts/underscore.js"></script>
+  <script src="/javascripts/handlebars.js"></script>
   <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
   
   <script src="/javascripts/trailmix.js"></script>
@@ -18,11 +20,20 @@
   <link href='http://fonts.googleapis.com/css?family=Carrois+Gothic' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Raleway+Dots' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Racing+Sans+One' rel='stylesheet' type='text/css'>
-
+  
   <script type="text/javascript" charset="utf-8">
+
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  };
+
+  function guid() {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  }
 
   var TrailMix = require("./lib/trailmix");
   var WebSQLAdapter = require("./lib/adapters/websql-adapter");
+  var todoTemplate = null;
   
   window.database = null;
   
@@ -30,6 +41,11 @@
     var db = window.database = new TrailMix.Database(adapter);
     db.addRemote("origin", "http://localhost:3000");
     db.pull("origin");
+    
+    $(function() {
+      todoTemplate = Handlebars.compile($("#todos-template").html());
+      loadTodos();
+    })
   })
   
   
@@ -52,27 +68,114 @@
       db.push("origin");
     })
     
+    $("#load").click(function() {
+      var db = window.database;
+      db.currentBranch(function(branch) {
+        branch.snapshot(function(snapshot) {
+          console.log(snapshot)
+        })
+      })
+    })
+    
     $("#delete").click(function() {
       window.database.delete();
     })
     
+    $("#form").submit(function() {
+      var name = $("#todo-name").val();
+      
+      var key = guid()
+      window.database.currentBranch(function(branch) {
+        branch.set(key, {
+          "id": key,
+          "name": name,
+          "done": false,
+          "createdAt": (new Date().getTime())
+        })
+        branch.commit();
+        
+        loadTodos();
+      })
+      
+      return false;
+    })
+    
+    $("#todos").on("click", ".todo-checkbox", function() {
+      var id = $(this).parents(".todo").attr('id')
+      var that = this
+      window.database.load([id], function(data) {
+        var value = data[id]
+        
+        if($(that).is(":checked")) {
+          value.done = true
+        } else {
+          value.done = false
+        }
+        
+        var changes = {}
+        changes[id] = value;
+        window.database.save("", {}, changes, function() {
+          loadTodos();
+        })
+      })
+    })
   })
   
-  
+  function loadTodos() {
+    window.database.currentBranch(function(branch) {
+      branch.snapshot(function(snapshot) {
+        var values = _.values(snapshot);
+        values = _.sortBy(values, function(todo) {
+          return todo.createdAt
+        })
+        
+        console.log(values);
+        
+        var html = todoTemplate({todos: values});
+        $("#todos").html(html);
+      })
+    })
+  }
   
   </script>
 
 </head>
 <body>
+  
+  <script id="todos-template" type="text/x-handlebars-template">
+    {{#each todos}}
+    <div class="todo" id="{{id}}">
+      <label class="checkbox">
+        <input class="todo-checkbox" {{#if done}}checked{{/if}} type="checkbox"> {{name}}
+      </label>
+    </div>
+    {{/each}}
+  </script>
+  
+  
   <div id="page">
     <div id="header">
+      <div class="pull-right">
+        <button class="btn" id="pull">Pull</button>
+        <button class="btn" id="push">Push</button>
+        <button class="btn" id="load">Load</button>
+        <button class="btn" id="delete">Delete</button>
+      </div>
+      
       <h1>Todo List</h1>
     </div>
     
+    <div id="navigation">
+      <form class="form-inline" id="form">
+        <input type="text" id="todo-name" class="input" style="width:500px" placeholder="New Todo Item">
+        <button type="submit" class="btn">Create</button>
+      </form>
+    </div>
+    
     <div id="content">
-      <button class="btn" id="pull">Pull</button>
-      <button class="btn" id="push">Push</button>
-      <button class="btn" id="delete">Delete</button>
+      <div id="todos">
+        
+      </div>
     </div>
     
     <div id="footer">
