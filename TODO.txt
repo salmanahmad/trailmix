@@ -1,7 +1,19 @@
 
+Merge
+
 Dealing with Remotes
 
 Reading a key-value pair from a remote?
 
 Setting cache settings for a keyed-pull
+
+Clear API
+
+WebSQL / Clients
+
+Auth
+
+Demo
+
+Presentation
 
