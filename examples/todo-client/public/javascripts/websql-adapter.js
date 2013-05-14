@@ -802,8 +802,13 @@ WebSQLAdapter.prototype.commits = function(options, callback) {
 
 WebSQLAdapter.prototype.saveCommit = function(commit, callback) {
   this.db.transaction(function(tx) {
+    console.log("Save Commit!")
     if(commit.parentIds) {
-      tx.executeSql("UPDATE commits SET head = 0 WHERE id IN (?)", [commit.parentIds.join(",")]) 
+      commit.parentIds.forEach(function(parentId) {
+        
+        console.log(parentId)
+        tx.executeSql("UPDATE commits SET head = 0 WHERE id = ?", [parentId]) 
+      })
     }
     
     tx.executeSql("INSERT INTO commits VALUES (?, ?, ?, ?, ?, ?)", 
