@@ -2,15 +2,17 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <title>Chatroom</title>
+  <title>Todo List</title>
 
   <script src="/javascripts/jquery-2.0.0.min.js"></script>
   <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="/socket.io/socket.io.js"></script>
-
+  
+  <script src="/javascripts/trailmix.js"></script>
+  <script src="/javascripts/websql-adapter.js"></script>
+  
   <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" type="text/css" media="screen" charset="utf-8">
   <link rel="stylesheet" href="/stylesheets/style.css" type="text/css" media="screen" charset="utf-8">
-
+  
   <link href='http://fonts.googleapis.com/css?family=Courgette' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Cantora+One' rel='stylesheet' type='text/css'>
   <link href='http://fonts.googleapis.com/css?family=Carrois+Gothic' rel='stylesheet' type='text/css'>
@@ -18,14 +20,29 @@
   <link href='http://fonts.googleapis.com/css?family=Racing+Sans+One' rel='stylesheet' type='text/css'>
 
   <script type="text/javascript" charset="utf-8">
+
+  var TrailMix = require("./lib/trailmix");
+  var WebSQLAdapter = require("./lib/adapters/websql-adapter");
+  
+
+  var adapter = new WebSQLAdapter({}, function() {
+    var database = new TrailMix.Database(adapter);
     
+    database.save("initial", {}, {"hello": "World!"}, function() {
+      console.log("saved!")
+      database.load(["hello"], function(values) {
+        console.log("Load returned this values: " + JSON.stringify(values));
+      })
+    })
+  })
+  
   </script>
 
 </head>
 <body>
   <div id="page">
     <div id="header">
-      <h1>TodoList</h1>
+      <h1>Todo List</h1>
     </div>
     
     <div id="content">
