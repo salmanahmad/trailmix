@@ -24,16 +24,28 @@
   var TrailMix = require("./lib/trailmix");
   var WebSQLAdapter = require("./lib/adapters/websql-adapter");
   
-  var database = null;
+  window.database = null;
   var adapter = new WebSQLAdapter({}, function() {
-    database = new TrailMix.Database(adapter);
-    database.save("initial", {}, {"hello": "World!"}, function() {
-      console.log("saved!")
-      database.load(["hello"], function(values) {
-        console.log("Load returned this values: " + JSON.stringify(values));
-      })
+    var db = window.database = new TrailMix.Database(adapter);
+    db.delete(function() {
+      db.addRemote("origin", "http://localhost:3000");
     })
   })
+  
+  $(function() {
+    $("#button").click(function() {
+      var db = window.database;
+      db.pull("origin", function() {
+        db.currentBranch(function(branch) {
+          branch.load(["hello"], function(data) {
+            console.log(data)
+          })
+        })
+      });
+    })
+  })
+  
+  
   
   </script>
 
@@ -45,7 +57,7 @@
     </div>
     
     <div id="content">
-      
+      <button class="btn" id="button">Pull!</button>
     </div>
     
     <div id="footer">

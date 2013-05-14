@@ -38,8 +38,18 @@ app.use(express.static(dir + "/public"));
 
 server = http.createServer(app)
 
+var TrailMix = require("../../lib/trailmix");
+var SQLiteAdapter = require("../../lib/adapters/sqlite-adapter");
+
+var database = null;
+var adapter = new SQLiteAdapter({}, function() {
+  database = new TrailMix.Database(adapter);
+})
+
 app.get("/commits", function(req, res) {
-  res.end("Hi!")
+  database.adapter.commits(function(commits) {
+    res.end(JSON.stringify(commits))
+  })
 })
 
 app.post("/commits", function(req, res) {
