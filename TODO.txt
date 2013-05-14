@@ -4,10 +4,6 @@ Dealing with Remotes
   Reading a key-value pair from a remote?
   Setting cache settings for a keyed-pull
 
-Delete API
-
-WebSQL / Clients
-
 Authentication
 
 Demo
