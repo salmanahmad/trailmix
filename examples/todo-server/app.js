@@ -42,6 +42,7 @@ var TrailMix = require("../../lib/trailmix");
 var SQLiteAdapter = require("../../lib/adapters/sqlite-adapter");
 
 var database = null;
+
 var adapter = new SQLiteAdapter({}, function() {
   database = new TrailMix.Database(adapter);
 })
@@ -58,6 +59,14 @@ app.post("/commits", function(req, res) {
   
   database.adapter.mergeCommits(commits, function() {
     res.end();
+  })
+})
+
+
+var io = require("socket.io").listen(server, {log: false})
+io.sockets.on("connection", function(socket) {
+  socket.on('pong', function() {
+    socket.broadcast.emit('ping')
   })
 })
 

@@ -8,6 +8,7 @@
   <script src="/javascripts/underscore.js"></script>
   <script src="/javascripts/handlebars.js"></script>
   <script src="/bootstrap/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
   
   <script src="/javascripts/trailmix.js"></script>
   <script src="/javascripts/websql-adapter.js"></script>
@@ -22,17 +23,39 @@
   <link href='http://fonts.googleapis.com/css?family=Racing+Sans+One' rel='stylesheet' type='text/css'>
   
   <script type="text/javascript" charset="utf-8">
+  var socket = io.connect('http://localhost:3000');
+  socket.on('ping', function (data) {
+    window.database.pull("origin", function() {
+      loadTodos();
+    });  
+  });
+  
+  socket.on('connection', function (data) {
+    window.database.pull("origin", function() {
+      loadTodos();
+      window.database.push("origin")
+    });  
+  });
+
+  socket.on('reconnect', function () {
+    alert("reconnect!")
+    window.database.pull("origin", function() {
+      loadTodos();
+      window.database.push("origin")
+    });  
+  })
+
 
   function tick() {
     window.database.pull("origin", function() {
       loadTodos();
       window.database.push("origin", function() {
-        setTimeout(tick, 1000);
+        //setTimeout(tick, 1000);
       })
     })
   }
   
-  setTimeout(tick, 200);
+  //setTimeout(tick, 200);
 
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -52,9 +75,11 @@
     var db = window.database = new TrailMix.Database(adapter);
     db.addRemote("origin", "http://localhost:3000");
     db.pull("origin", function() {
-      $(function() {
-        todoTemplate = Handlebars.compile($("#todos-template").html());
-        loadTodos();
+      db.push("origin", function() {
+        $(function() {
+          todoTemplate = Handlebars.compile($("#todos-template").html());
+          loadTodos();
+        })
       })
     });
   })
@@ -104,8 +129,12 @@
           "createdAt": (new Date().getTime())
         })
         branch.commit();
-        
         loadTodos();
+        
+        window.database.push("origin", function() {
+          socket.emit('pong')
+        })
+        
       })
       
       return false;
@@ -126,7 +155,9 @@
         var changes = {}
         changes[id] = value;
         window.database.save("", {}, changes, function() {
-          window.database.push("origin")
+          window.database.push("origin", function() {
+            socket.emit('pong')
+          })
           loadTodos();
         })
       })
